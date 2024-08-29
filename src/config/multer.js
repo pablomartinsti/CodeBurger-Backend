@@ -1,13 +1,14 @@
-import multer from "multer";
-import path from 'path'
+import multer from 'multer'
+import { v4 } from 'uuid'
 
-export const storage = multer.diskStorage({
-    destination:(req,file, callback)=>{
-        callback(null,path.resolve('uploads'))
-    },
-    filename:(req,file, callback)=>{
-        const time = new Date().getTime()
+import { extname, resolve } from 'node:path'
 
-        callback(null,`${time}_${file.originalname}`)
-    }
-})
+
+export default {
+    storage: multer.diskStorage({
+        destination: resolve(__dirname, '..', '..', 'uploads'),
+        filename: (request, file, callback) =>
+            callback(null, v4() + extname(file.originalname))
+    })
+
+}
