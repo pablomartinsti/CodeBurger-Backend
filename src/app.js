@@ -3,7 +3,7 @@ import routes from './routes';
 import { resolve } from 'node:path';
 import cors from 'cors';
 
-import './database';
+import './database/index.js';
 
 class App {
   constructor() {
