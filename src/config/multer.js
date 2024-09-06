@@ -1,17 +1,19 @@
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { extname, resolve } from 'node:path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { extname } from 'node:path';
+import cloudinary from './cloudinaryConfig.js'; // Importar a configuração do Cloudinary
+import { CloudinaryStorage } from 'multer-storage-cloudinary'; // Importar o storage para Cloudinary
 
-// Definir __dirname para ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Configurar o armazenamento no Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary, // A configuração do Cloudinary importada
+  params: {
+    folder: 'uploads', // Pasta onde as imagens serão armazenadas no Cloudinary
+    format: async (req, file) => extname(file.originalname).replace('.', ''), // Formato da imagem
+    public_id: (req, file) => uuidv4() + extname(file.originalname), // Nome único para o arquivo
+  },
+});
 
-export default {
-  storage: multer.diskStorage({
-    destination: resolve(__dirname, '..', '..', 'uploads'),
-    filename: (request, file, callback) =>
-      callback(null, uuidv4() + extname(file.originalname)),
-  }),
-};
+const upload = multer({ storage });
+
+export default upload;

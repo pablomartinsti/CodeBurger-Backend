@@ -1,15 +1,7 @@
 import express from 'express';
 import routes from './routes.js';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import cors from 'cors';
-
 import './database/index.js';
-
-// Definir __dirname para ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 class App {
   constructor() {
@@ -21,19 +13,15 @@ class App {
   }
 
   middlewares() {
+    // Middleware para aceitar JSON nas requisições
     this.app.use(express.json());
-    this.app.use(
-      '/product-file',
-      express.static(resolve(__dirname, '..', 'uploads')),
-    );
-    this.app.use(
-      '/category-file',
-      express.static(resolve(__dirname, '..', 'uploads')),
-    );
+
+    // Se futuramente precisar servir arquivos estáticos, pode adicionar aqui
+    // Atualmente, não precisamos servir uploads locais com o Cloudinary
   }
 
   routes() {
-    this.app.use(routes);
+    this.app.use(routes); // Definindo as rotas
   }
 }
 
