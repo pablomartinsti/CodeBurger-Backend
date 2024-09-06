@@ -1,118 +1,113 @@
-import * as Yup from 'yup'
+import * as Yup from 'yup';
 import Category from '../models/Category.js';
-import User from '../models/User.js'
-
+import User from '../models/User.js';
 
 class CategoryController {
+  async store(request, response) {
+    const schema = Yup.object({
+      name: Yup.string().required(),
+    });
 
-    async store(request, response) {
-        const schema = Yup.object({
-            name: Yup.string().required(),
-
-        })
-
-        try {
-            schema.validateSync(request.body, { abortEarly: false });
-        } catch (err) {
-            return response.status(400).json({ error: err.errors })
-        }
-
-        const { admin: isAdmin } = await User.findByPk(request.userId)
-
-        if (!isAdmin) {
-            return response.status(401).json()
-        }
-
-        const {filename: path} = request.file
-        const { name } = request.body
-
-        const categoryExists = await Category.findOne({
-            where: {
-                name,
-            },
-        })
-
-        if (categoryExists) {
-
-            return response.status(400).json
-                ({ error: 'category already exists' })
-        }
-
-        const { id } = await Category.create({
-            name,
-            path,
-
-        })
-        return response.status(201).json({ id, name })
+    try {
+      schema.validateSync(request.body, { abortEarly: false });
+    } catch (err) {
+      return response.status(400).json({ error: err.errors });
     }
 
-    async update(request, response) {
-        const schema = Yup.object({
-            name: Yup.string()
+    const { admin: isAdmin } = await User.findByPk(request.userId);
 
-        })
+    if (!isAdmin) {
+      return response.status(401).json();
+    }
 
-        try {
-            schema.validateSync(request.body, { abortEarly: false });
-        } catch (err) {
-            return response.status(400).json({ error: err.errors })
-        }
+    // Obter a URL da imagem do Cloudinary
+    const { path: imageUrl } = request.file;
+    const { name } = request.body;
 
-        const { admin: isAdmin } = await User.findByPk(request.userId)
+    const categoryExists = await Category.findOne({
+      where: {
+        name,
+      },
+    });
 
-        if (!isAdmin) {
-            return response.status(401).json()
-        }
+    if (categoryExists) {
+      return response.status(400).json({ error: 'Category already exists' });
+    }
 
-        const { id } = request.params
+    const { id } = await Category.create({
+      name,
+      path: imageUrl, // Armazenar a URL da imagem
+    });
 
-        const categoryExists = await Category.findByPk(id)
+    return response.status(201).json({ id, name });
+  }
 
-        if (! categoryExists){
-            return response.status(400).json({message: 'Make sure your category ID is correct'})
-        }
+  async update(request, response) {
+    const schema = Yup.object({
+      name: Yup.string(),
+    });
 
-        let path
-        if(request.file){
-            path = request.file.filename
-        }
+    try {
+      schema.validateSync(request.body, { abortEarly: false });
+    } catch (err) {
+      return response.status(400).json({ error: err.errors });
+    }
 
-        const { name } = request.body
+    const { admin: isAdmin } = await User.findByPk(request.userId);
 
-      
-       if(name){
-        const categoryNameExists = await Category.findOne({
-            where: {
-                name,
-            },
-        })
+    if (!isAdmin) {
+      return response.status(401).json();
+    }
 
-        if (categoryNameExists && categoryNameExists.id !== + id) {
+    const { id } = request.params;
 
-            return response.status(400).json
-                ({ error: 'category already exists' })
-        }
-       }
+    const categoryExists = await Category.findByPk(id);
 
-        await Category.update({
-            name,
-            path,
+    if (!categoryExists) {
+      return response
+        .status(400)
+        .json({ message: 'Make sure your category ID is correct' });
+    }
 
+    let imageUrl = categoryExists.path; // Mantém o path original se nenhuma nova imagem for enviada
+    if (request.file) {
+      imageUrl = request.file.path; // Atualiza a URL da imagem se uma nova imagem for enviada
+    }
+
+    const { name } = request.body;
+
+    if (name) {
+      const categoryNameExists = await Category.findOne({
+        where: {
+          name,
         },
-    {
-        where:{
-            id,
-        }
-    })
-        return response.status(201).json()
+      });
+
+      if (categoryNameExists && categoryNameExists.id !== +id) {
+        return response.status(400).json({ error: 'Category already exists' });
+      }
     }
 
-    async index(resquest, response) {
-        const categories = await Category.findAll()
+    await Category.update(
+      {
+        name,
+        path: imageUrl, // Atualiza a URL da imagem
+      },
+      {
+        where: {
+          id,
+        },
+      },
+    );
 
-        return response.json(categories)
-    }
+    return response.status(200).json();
+  }
+
+  async index(request, response) {
+    const categories = await Category.findAll();
+
+    return response.json(categories);
+  }
 }
 
-
-export default new CategoryController()
+export default new CategoryController();
