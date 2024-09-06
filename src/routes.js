@@ -12,6 +12,11 @@ const routes = new Router();
 
 const upload = multer(multerConfig);
 
+// Rota para a raiz "/"
+routes.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 routes.post('/users', UserController.store);
 routes.post('/session', SessionController.store);
 routes.get('/products', ProductController.index);
