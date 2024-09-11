@@ -1,7 +1,7 @@
-<h1>DevBurger - Backend</h1>
+<h1>CodeBurger - Backend</h1>
 
 <p>
-  Este é o backend do projeto DevBurger, uma aplicação completa para gerenciar pedidos em uma hamburgueria. A API foi desenvolvida utilizando Node.js, Express, Sequelize, PostgreSQL e MongoDB para fornecer uma solução robusta e escalável.
+  Este é o backend do projeto CodeBurger, uma aplicação completa para gerenciar pedidos em uma hamburgueria. A API foi desenvolvida utilizando Node.js, Express, Sequelize, PostgreSQL e MongoDB para fornecer uma solução robusta e escalável.
 </p>
 
 <h2>Funcionalidades</h2>
@@ -28,8 +28,8 @@
 
 <ol>
   <li><strong>Clone o repositório:</strong>
-    <pre><code>git clone https://github.com/pablomartinsti/devBurger-Backend.git
-cd devBurger-Backend</code></pre>
+    <pre><code>git clone https://github.com/pablomartinsti/CodeBurger-Backend.git
+cd CodeBurger-Backend</code></pre>
   </li>
 
   <li><strong>Instale as dependências:</strong>
